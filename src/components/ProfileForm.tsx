@@ -334,21 +334,12 @@ export function ProfileForm() {
         </div>
 
         {/* Signing Section */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Label>Signing</Label>
-            <InfoTooltip content="Sign the profile with your certificate for verification. Signed profiles show as 'Verified' in iOS/macOS Settings." />
-          </div>
-
-          <div>
-            <SigningCertificateInput
-              enabled={signingEnabled}
-              onEnabledChange={setSigningEnabled}
-              certificates={signingCerts}
-              onChange={setSigningCerts}
-            />
-          </div>
-        </div>
+        <SigningCertificateInput
+          enabled={signingEnabled}
+          onEnabledChange={setSigningEnabled}
+          certificates={signingCerts}
+          onChange={setSigningCerts}
+        />
       </div>
 
       {/* Action Buttons */}
