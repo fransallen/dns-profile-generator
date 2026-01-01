@@ -10,14 +10,7 @@ import {
   getCertificateInfo,
   parseCertificateChain,
 } from "@/lib/profile-signer";
-import {
-  Shield,
-  Upload,
-  CheckCircle2,
-  XCircle,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
+import { Shield, Upload, CheckCircle2, XCircle, ChevronDown, ChevronUp } from "lucide-react";
 
 export interface SigningCertificates {
   signingCert: string;
@@ -45,10 +38,7 @@ export function SigningCertificateInput({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleFileUpload = useCallback(
-    (
-      field: "signingCert" | "privateKey" | "chainCerts",
-      e: React.ChangeEvent<HTMLInputElement>
-    ) => {
+    (field: "signingCert" | "privateKey" | "chainCerts", e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
 
@@ -68,7 +58,7 @@ export function SigningCertificateInput({
       };
       reader.readAsText(file);
     },
-    [signingCert, privateKey, chainCerts]
+    [signingCert, privateKey, chainCerts],
   );
 
   const validateAndUpdate = useCallback(
@@ -106,7 +96,7 @@ export function SigningCertificateInput({
         onChange(null);
       }
     },
-    [onChange]
+    [onChange],
   );
 
   const handleTextChange = useCallback(
@@ -122,7 +112,7 @@ export function SigningCertificateInput({
         validateAndUpdate(signingCert, privateKey, value);
       }
     },
-    [signingCert, privateKey, chainCerts, validateAndUpdate]
+    [signingCert, privateKey, chainCerts, validateAndUpdate],
   );
 
   const handleEnabledChange = (checked: boolean) => {
@@ -141,17 +131,12 @@ export function SigningCertificateInput({
     <div className="space-y-4 rounded-lg border border-border bg-card p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Checkbox
-            id="enableSigning"
-            checked={enabled}
-            onCheckedChange={handleEnabledChange}
-          />
+          <Checkbox id="enableSigning" checked={enabled} onCheckedChange={handleEnabledChange} />
           <div className="flex items-center gap-2">
             <Shield className="h-4 w-4 text-primary" />
             <Label htmlFor="enableSigning" className="cursor-pointer font-medium">
               Sign Profile with S/MIME
             </Label>
-            <InfoTooltip content="Sign the profile with your certificate for verification. Signed profiles show as 'Verified' in iOS/macOS Settings." />
           </div>
         </div>
         {enabled && (
@@ -167,16 +152,8 @@ export function SigningCertificateInput({
                 Incomplete
               </span>
             )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsExpanded(!isExpanded)}
-            >
-              {isExpanded ? (
-                <ChevronUp className="h-4 w-4" />
-              ) : (
-                <ChevronDown className="h-4 w-4" />
-              )}
+            <Button variant="ghost" size="sm" onClick={() => setIsExpanded(!isExpanded)}>
+              {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             </Button>
           </div>
         )}
@@ -213,9 +190,7 @@ export function SigningCertificateInput({
               className={`font-mono text-xs ${errors.signingCert ? "border-destructive" : ""}`}
               rows={4}
             />
-            {errors.signingCert && (
-              <p className="text-xs text-destructive">{errors.signingCert}</p>
-            )}
+            {errors.signingCert && <p className="text-xs text-destructive">{errors.signingCert}</p>}
             {certInfo && (
               <div className="rounded bg-muted/50 px-3 py-2 text-xs text-muted-foreground">
                 <p>
@@ -225,8 +200,8 @@ export function SigningCertificateInput({
                   <strong>Issuer:</strong> {certInfo.issuer}
                 </p>
                 <p>
-                  <strong>Valid:</strong> {certInfo.validFrom.toLocaleDateString()}{" "}
-                  - {certInfo.validTo.toLocaleDateString()}
+                  <strong>Valid:</strong> {certInfo.validFrom.toLocaleDateString()} -{" "}
+                  {certInfo.validTo.toLocaleDateString()}
                 </p>
               </div>
             )}
@@ -261,9 +236,7 @@ export function SigningCertificateInput({
               className={`font-mono text-xs ${errors.privateKey ? "border-destructive" : ""}`}
               rows={4}
             />
-            {errors.privateKey && (
-              <p className="text-xs text-destructive">{errors.privateKey}</p>
-            )}
+            {errors.privateKey && <p className="text-xs text-destructive">{errors.privateKey}</p>}
           </div>
 
           {/* Certificate Chain */}
@@ -295,20 +268,16 @@ export function SigningCertificateInput({
               className={`font-mono text-xs ${errors.chainCerts ? "border-destructive" : ""}`}
               rows={3}
             />
-            {errors.chainCerts && (
-              <p className="text-xs text-destructive">{errors.chainCerts}</p>
-            )}
+            {errors.chainCerts && <p className="text-xs text-destructive">{errors.chainCerts}</p>}
             {chainCerts && !errors.chainCerts && (
               <p className="text-xs text-muted-foreground">
-                Found {parseCertificateChain(chainCerts).length} certificate(s) in
-                chain
+                Found {parseCertificateChain(chainCerts).length} certificate(s) in chain
               </p>
             )}
           </div>
 
           <p className="text-xs text-muted-foreground">
-            ⚠️ Private keys are processed entirely in your browser and never sent
-            to any server.
+            ⚠️ Private keys are processed entirely in your browser and never sent to any server.
           </p>
         </div>
       )}

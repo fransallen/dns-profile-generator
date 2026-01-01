@@ -337,6 +337,7 @@ export function ProfileForm() {
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <Label>Signing</Label>
+            <InfoTooltip content="Sign the profile with your certificate for verification. Signed profiles show as 'Verified' in iOS/macOS Settings." />
           </div>
 
           <div>
