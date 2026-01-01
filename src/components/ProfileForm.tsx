@@ -37,6 +37,7 @@ export function ProfileForm() {
   const handleProviderSelect = (provider: DNSProvider) => {
     setSelectedProvider(provider);
     if (provider.id !== "custom") {
+      setProfileName(provider.name);
       setServerUrl(dnsProtocol === "HTTPS" ? provider.dohUrl : provider.dotHostname);
       setServerIps(provider.ips?.join(", ") || "");
     } else {
