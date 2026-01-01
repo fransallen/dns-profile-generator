@@ -1,5 +1,5 @@
 import { ProfileForm } from "@/components/ProfileForm";
-import { Shield, Smartphone, Monitor } from "lucide-react";
+import { Shield, Smartphone, Monitor, Tv, Apple } from "lucide-react";
 
 const Index = () => {
   return (
@@ -45,11 +45,111 @@ const Index = () => {
             <ProfileForm />
           </div>
 
+          {/* Installation Instructions */}
+          <div className="mt-8 animate-fade-in space-y-6">
+            <h2 className="text-xl font-semibold">Installation Instructions</h2>
+            
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* iOS / iPadOS */}
+              <div className="rounded-xl border border-border bg-card p-5">
+                <h3 className="mb-4 flex items-center gap-2 font-medium">
+                  <Smartphone className="h-4 w-4 text-primary" />
+                  iOS / iPadOS
+                </h3>
+                <ol className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex gap-2">
+                    <span className="font-medium text-foreground">1.</span>
+                    Download the configuration profile.
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-medium text-foreground">2.</span>
+                    Open the Settings app.
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-medium text-foreground">3.</span>
+                    Tap Profile Downloaded.
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-medium text-foreground">4.</span>
+                    Tap Install in the upper-right corner, and follow the onscreen instructions.
+                  </li>
+                </ol>
+              </div>
+
+              {/* macOS */}
+              <div className="rounded-xl border border-border bg-card p-5">
+                <h3 className="mb-4 flex items-center gap-2 font-medium">
+                  <Monitor className="h-4 w-4 text-primary" />
+                  macOS
+                </h3>
+                <ol className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex gap-2">
+                    <span className="font-medium text-foreground">1.</span>
+                    Download the configuration profile.
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-medium text-foreground">2.</span>
+                    Open the downloaded .mobileconfig file.
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-medium text-foreground">3.</span>
+                    Open System Preferences.
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-medium text-foreground">4.</span>
+                    Go to Profiles.
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-medium text-foreground">5.</span>
+                    Click Install.
+                  </li>
+                </ol>
+              </div>
+
+              {/* tvOS */}
+              <div className="rounded-xl border border-border bg-card p-5 md:col-span-2">
+                <h3 className="mb-4 flex items-center gap-2 font-medium">
+                  <Tv className="h-4 w-4 text-primary" />
+                  tvOS
+                </h3>
+                <ol className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex gap-2">
+                    <span className="font-medium text-foreground">1.</span>
+                    Open the Settings app.
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-medium text-foreground">2.</span>
+                    Go to General → Privacy.
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-medium text-foreground">3.</span>
+                    Hover over Share Apple TV Analytics without pressing.
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-medium text-foreground">4.</span>
+                    Press Play on the remote.
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-medium text-foreground">5.</span>
+                    Select Add Profile.
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-medium text-foreground">6.</span>
+                    Enter the generated short link.
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-medium text-foreground">7.</span>
+                    Install the profile following the onscreen instructions.
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+
           {/* Compatibility Note */}
           <div className="mt-8 animate-fade-in rounded-xl bg-secondary/50 p-6">
             <h3 className="mb-3 flex items-center gap-2 font-medium">
-              <Smartphone className="h-4 w-4" />
-              <Monitor className="h-4 w-4" />
+              <Apple className="h-4 w-4" />
               Compatibility
             </h3>
             <div className="grid gap-2 text-sm text-muted-foreground">
@@ -61,9 +161,9 @@ const Index = () => {
                 <span className="font-medium text-foreground">macOS:</span>{" "}
                 11.0 (Big Sur) and later
               </p>
-              <p className="mt-2 text-xs">
-                Configuration profiles can be installed by opening the .mobileconfig file on your device. 
-                On iOS, go to Settings → General → VPN & Device Management to complete installation.
+              <p>
+                <span className="font-medium text-foreground">tvOS:</span>{" "}
+                14.0 and later
               </p>
             </div>
           </div>
