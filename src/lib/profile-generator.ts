@@ -49,7 +49,9 @@ export function generateMobileConfig(config: ProfileConfig): string {
       ? `
       <key>ServerAddresses</key>
       <array>
-        ${config.serverIps.map((ip) => `<string>${escapeXml(ip.trim())}</string>`).join("\n        ")}
+        ${config.serverIps
+          .map((ip) => `<string>${escapeXml(ip.trim())}</string>`)
+          .join("\n        ")}
       </array>`
       : "";
 
@@ -95,6 +97,20 @@ export function generateMobileConfig(config: ProfileConfig): string {
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
+    <key>PayloadDisplayName</key>
+    <string>${escapeXml(config.profileName)}</string>
+    <key>PayloadDescription</key>
+    <string>Configures encrypted DNS (${
+      config.dnsProtocol === "HTTPS" ? "DNS over HTTPS" : "DNS over TLS"
+    }) for secure DNS resolution.</string>
+    <key>PayloadIdentifier</key>
+    <string>${escapeXml(config.profileIdentifier)}</string>${
+    config.organizationName
+      ? `
+    <key>PayloadOrganization</key>
+    <string>${escapeXml(config.organizationName)}</string>`
+      : ""
+  }
     <key>PayloadContent</key>
     <array>
       <dict>
@@ -105,13 +121,39 @@ export function generateMobileConfig(config: ProfileConfig): string {
         <array>
           <dict>
             <key>Action</key>
+            <string>EvaluateConnection</string>
+            <key>ActionParameters</key>
+            <array>
+              <dict>
+                <key>DomainAction</key>
+                <string>NeverConnect</string>
+                <key>Domains</key>
+                <array>
+                  <string>captive.apple.com</string>
+                  <string>dav.orange.fr</string>
+                  <string>vvm.mobistar.be</string>
+                  <string>vvm.mstore.msg.t-mobile.com</string>
+                  <string>tma.vvm.mone.pan-net.eu</string>
+                  <string>vvm.ee.co.uk</string>
+                </array>
+              </dict>
+            </array>
+          </dict>
+          <dict>
+            <key>Action</key>
             <string>Connect</string>
           </dict>
         </array>
         <key>PayloadDisplayName</key>
-        <string>DNS Settings</string>
+        <string>${escapeXml(config.profileName)}</string>
         <key>PayloadIdentifier</key>
-        <string>${escapeXml(config.profileIdentifier)}.dns</string>
+        <string>${escapeXml(config.profileIdentifier)}.dns</string>${
+    config.organizationName
+      ? `
+          <key>PayloadOrganization</key>
+          <string>${escapeXml(config.organizationName)}</string>`
+      : ""
+  }      
         <key>PayloadType</key>
         <string>com.apple.dnsSettings.managed</string>
         <key>PayloadUUID</key>
@@ -122,18 +164,6 @@ export function generateMobileConfig(config: ProfileConfig): string {
         <${config.encryptedOnly}/>
       </dict>${certificatePayloads}
     </array>
-    <key>PayloadDescription</key>
-    <string>Configures encrypted DNS (${config.dnsProtocol === "HTTPS" ? "DNS over HTTPS" : "DNS over TLS"}) for secure DNS resolution.</string>
-    <key>PayloadDisplayName</key>
-    <string>${escapeXml(config.profileName)}</string>
-    <key>PayloadIdentifier</key>
-    <string>${escapeXml(config.profileIdentifier)}</string>${
-      config.organizationName
-        ? `
-    <key>PayloadOrganization</key>
-    <string>${escapeXml(config.organizationName)}</string>`
-        : ""
-    }
     <key>PayloadRemovalDisallowed</key>
     <false/>
     <key>PayloadScope</key>
@@ -155,7 +185,9 @@ export function downloadProfile(xml: string, filename: string): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = filename.endsWith(".mobileconfig") ? filename : `${filename}.mobileconfig`;
+  a.download = filename.endsWith(".mobileconfig")
+    ? filename
+    : `${filename}.mobileconfig`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
