@@ -7,7 +7,7 @@ import { RadioGroup, RadioGroupCard } from "@/components/ui/radio-group";
 import { InfoTooltip } from "@/components/InfoTooltip";
 import { ProviderSelector } from "@/components/ProviderSelector";
 import { CodePreview } from "@/components/CodePreview";
-import { CertificateInput } from "@/components/CertificateInput";
+
 import { SigningCertificateInput, type SigningCertificates } from "@/components/SigningCertificateInput";
 import { dnsProviders, type DNSProvider } from "@/lib/dns-providers";
 import { generateMobileConfig, downloadProfile, type ProfileConfig, type CertificateConfig } from "@/lib/profile-generator";
@@ -25,7 +25,7 @@ export function ProfileForm() {
   const [serverIps, setServerIps] = useState(dnsProviders[0].ips?.join(", ") || "");
   const [encryptedOnly, setEncryptedOnly] = useState(false);
   const [payloadScope, setPayloadScope] = useState<"System" | "User">("System");
-  const [certificates, setCertificates] = useState<CertificateConfig[]>([]);
+  const [certificates] = useState<CertificateConfig[]>([]);
   const [signingEnabled, setSigningEnabled] = useState(false);
   const [signingCerts, setSigningCerts] = useState<SigningCertificates | null>(null);
   const [generatedXml, setGeneratedXml] = useState<string | null>(null);
@@ -158,7 +158,7 @@ export function ProfileForm() {
     setServerIps(dnsProviders[0].ips?.join(", ") || "");
     setEncryptedOnly(false);
     setPayloadScope("System");
-    setCertificates([]);
+    
     setSigningEnabled(false);
     setSigningCerts(null);
     setGeneratedXml(null);
@@ -344,9 +344,6 @@ export function ProfileForm() {
             </div>
           </RadioGroup>
         </div>
-
-        {/* Certificate Section */}
-        <CertificateInput certificates={certificates} onChange={setCertificates} />
 
         {/* Signing Section */}
         <SigningCertificateInput
