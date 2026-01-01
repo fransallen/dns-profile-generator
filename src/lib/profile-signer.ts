@@ -115,41 +115,81 @@ export function downloadSignedProfile(
  * Extracts the first certificate from PEM content (handles fullchain files)
  */
 export function extractFirstCertificate(pem: string): string | null {
-  const match = pem.match(/-----BEGIN CERTIFICATE-----[\s\S]*?-----END CERTIFICATE-----/);
+  const match = pem.match(
+    /-----BEGIN CERTIFICATE-----[\s\S]*?-----END CERTIFICATE-----/
+  );
   return match ? match[0] : null;
+}
+
+export type PemValidationResult =
+  | { valid: true }
+  | {
+      valid: false;
+      code?: "NO_PEM_BLOCK" | "UNSUPPORTED_KEY_TYPE" | "ENCRYPTED_KEY" | "INVALID_PEM";
+      error: string;
+    };
+
+function isForgeUnsupportedKeyType(err: unknown): boolean {
+  return err instanceof Error && /OID is not RSA/i.test(err.message);
 }
 
 /**
  * Validates a PEM certificate (supports fullchain - uses first cert)
  */
-export function validatePemCertificate(pem: string): boolean {
+export function validatePemCertificate(pem: string): PemValidationResult {
   try {
     const firstCert = extractFirstCertificate(pem);
-    if (!firstCert) return false;
+    if (!firstCert) {
+      return { valid: false, code: "NO_PEM_BLOCK", error: "No PEM certificate block found" };
+    }
+
     forge.pki.certificateFromPem(firstCert);
-    return true;
-  } catch {
-    return false;
+    return { valid: true };
+  } catch (err) {
+    if (isForgeUnsupportedKeyType(err)) {
+      return {
+        valid: false,
+        code: "UNSUPPORTED_KEY_TYPE",
+        error:
+          "Unsupported certificate type (ECDSA). Please use an RSA certificate (LetsEncrypt RSA, or an RSA S/MIME signing cert).",
+      };
+    }
+
+    return { valid: false, code: "INVALID_PEM", error: "Invalid PEM certificate" };
   }
 }
 
 /**
- * Validates a PEM private key (supports RSA, EC, and PKCS#8 formats)
+ * Validates a PEM private key (RSA only; encrypted/EC keys are not supported)
  */
-export function validatePemPrivateKey(pem: string): boolean {
+export function validatePemPrivateKey(pem: string): PemValidationResult {
+  const trimmed = pem.trim();
+
+  // Common encrypted formats
+  if (
+    trimmed.includes("-----BEGIN ENCRYPTED PRIVATE KEY-----") ||
+    trimmed.includes("Proc-Type: 4,ENCRYPTED")
+  ) {
+    return {
+      valid: false,
+      code: "ENCRYPTED_KEY",
+      error: "Encrypted private keys are not supported. Please provide an unencrypted RSA private key.",
+    };
+  }
+
   try {
-    // Try standard RSA private key
-    forge.pki.privateKeyFromPem(pem);
-    return true;
-  } catch {
-    // Check for EC private key format (not directly supported by node-forge)
-    if (pem.includes("-----BEGIN EC PRIVATE KEY-----") || 
-        pem.includes("-----BEGIN PRIVATE KEY-----")) {
-      // Basic PEM structure validation for EC keys
-      const pemRegex = /-----BEGIN (?:EC )?PRIVATE KEY-----[\s\S]+-----END (?:EC )?PRIVATE KEY-----/;
-      return pemRegex.test(pem);
+    forge.pki.privateKeyFromPem(trimmed);
+    return { valid: true };
+  } catch (err) {
+    if (isForgeUnsupportedKeyType(err)) {
+      return {
+        valid: false,
+        code: "UNSUPPORTED_KEY_TYPE",
+        error: "Unsupported private key type (ECDSA). Please use an RSA private key.",
+      };
     }
-    return false;
+
+    return { valid: false, code: "INVALID_PEM", error: "Invalid PEM private key" };
   }
 }
 

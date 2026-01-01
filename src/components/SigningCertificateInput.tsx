@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, forwardRef } from "react";
+import { useState, useCallback, useEffect, useMemo, forwardRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -73,16 +73,26 @@ export const SigningCertificateInput = forwardRef<HTMLDivElement, SigningCertifi
       (cert: string, key: string, chain: string) => {
         const newErrors: Record<string, string> = {};
 
-        if (cert && !validatePemCertificate(cert)) {
-          newErrors.signingCert = "Invalid PEM certificate";
+        const certBlocks = cert ? parseCertificateChain(cert) : [];
+        const signingCertLeaf = certBlocks[0] ?? cert;
+        const inferredChainFromCert = certBlocks.length > 1 ? certBlocks.slice(1) : [];
+
+        const chainBlocks = chain ? parseCertificateChain(chain) : [];
+        const mergedChain = [...inferredChainFromCert, ...chainBlocks];
+
+        const certValidation = cert ? validatePemCertificate(signingCertLeaf) : ({ valid: true } as const);
+        const keyValidation = key ? validatePemPrivateKey(key) : ({ valid: true } as const);
+
+        if (cert && certValidation.valid === false) {
+          newErrors.signingCert = certValidation.error;
         }
 
-        if (key && !validatePemPrivateKey(key)) {
-          newErrors.privateKey = "Invalid PEM private key";
+        if (key && keyValidation.valid === false) {
+          newErrors.privateKey = keyValidation.error;
         }
 
-        const chainCertsParsed = chain ? parseCertificateChain(chain) : [];
-        if (chain && chainCertsParsed.length === 0) {
+        // Only flag chain input if the user provided chain text but we couldn't find any cert blocks in it.
+        if (chain && chainBlocks.length === 0) {
           newErrors.chainCerts = "No valid certificates found in chain";
         }
 
@@ -92,13 +102,13 @@ export const SigningCertificateInput = forwardRef<HTMLDivElement, SigningCertifi
           cert &&
           key &&
           Object.keys(newErrors).length === 0 &&
-          validatePemCertificate(cert) &&
-          validatePemPrivateKey(key)
+          certValidation.valid &&
+          keyValidation.valid
         ) {
           onChange({
-            signingCert: cert,
+            signingCert: signingCertLeaf,
             privateKey: key,
-            chainCerts: chainCertsParsed,
+            chainCerts: mergedChain,
           });
         } else {
           onChange(null);
@@ -132,6 +142,11 @@ export const SigningCertificateInput = forwardRef<HTMLDivElement, SigningCertifi
         validateAndUpdate(signingCert, privateKey, chainCerts);
       }
     };
+
+    const signingCertBlocks = useMemo(
+      () => (signingCert ? parseCertificateChain(signingCert) : []),
+      [signingCert],
+    );
 
     const certInfo = signingCert ? getCertificateInfo(signingCert) : null;
     const isValid = enabled && certificates !== null;
@@ -225,7 +240,15 @@ export const SigningCertificateInput = forwardRef<HTMLDivElement, SigningCertifi
                   className={`font-mono text-xs ${errors.signingCert ? "border-destructive" : ""}`}
                   rows={3}
                 />
-                {errors.signingCert && <p className="text-xs text-destructive">{errors.signingCert}</p>}
+                {signingCertBlocks.length > 1 && (
+                  <p className="text-xs text-muted-foreground">
+                    Detected {signingCertBlocks.length} certificates (fullchain). We’ll use the first
+                    certificate for signing and treat the remaining certificates as the chain.
+                  </p>
+                )}
+                {errors.signingCert && (
+                  <p className="text-xs text-destructive">{errors.signingCert}</p>
+                )}
                 {certInfo && (
                   <div className="rounded-md bg-muted/50 px-3 py-2 text-xs">
                     <div className="grid gap-1 text-muted-foreground">
