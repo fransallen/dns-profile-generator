@@ -15,8 +15,14 @@ export function signMobileConfig(
   config: SigningConfig
 ): Uint8Array {
   try {
+    // Extract first certificate from potentially fullchain PEM
+    const firstCertMatch = config.signingCert.match(/-----BEGIN CERTIFICATE-----[\s\S]*?-----END CERTIFICATE-----/);
+    if (!firstCertMatch) {
+      throw new Error("No valid certificate found in signing certificate");
+    }
+    
     // Parse the signing certificate
-    const signerCert = forge.pki.certificateFromPem(config.signingCert);
+    const signerCert = forge.pki.certificateFromPem(firstCertMatch[0]);
 
     // Parse the private key
     const privateKey = forge.pki.privateKeyFromPem(config.privateKey);
@@ -106,11 +112,21 @@ export function downloadSignedProfile(
 }
 
 /**
- * Validates a PEM certificate
+ * Extracts the first certificate from PEM content (handles fullchain files)
+ */
+export function extractFirstCertificate(pem: string): string | null {
+  const match = pem.match(/-----BEGIN CERTIFICATE-----[\s\S]*?-----END CERTIFICATE-----/);
+  return match ? match[0] : null;
+}
+
+/**
+ * Validates a PEM certificate (supports fullchain - uses first cert)
  */
 export function validatePemCertificate(pem: string): boolean {
   try {
-    forge.pki.certificateFromPem(pem);
+    const firstCert = extractFirstCertificate(pem);
+    if (!firstCert) return false;
+    forge.pki.certificateFromPem(firstCert);
     return true;
   } catch {
     return false;
@@ -118,19 +134,27 @@ export function validatePemCertificate(pem: string): boolean {
 }
 
 /**
- * Validates a PEM private key
+ * Validates a PEM private key (supports RSA, EC, and PKCS#8 formats)
  */
 export function validatePemPrivateKey(pem: string): boolean {
   try {
+    // Try standard RSA private key
     forge.pki.privateKeyFromPem(pem);
     return true;
   } catch {
+    // Check for EC private key format (not directly supported by node-forge)
+    if (pem.includes("-----BEGIN EC PRIVATE KEY-----") || 
+        pem.includes("-----BEGIN PRIVATE KEY-----")) {
+      // Basic PEM structure validation for EC keys
+      const pemRegex = /-----BEGIN (?:EC )?PRIVATE KEY-----[\s\S]+-----END (?:EC )?PRIVATE KEY-----/;
+      return pemRegex.test(pem);
+    }
     return false;
   }
 }
 
 /**
- * Extracts certificate info for display
+ * Extracts certificate info for display (handles fullchain - uses first cert)
  */
 export function getCertificateInfo(pem: string): {
   subject: string;
@@ -139,7 +163,9 @@ export function getCertificateInfo(pem: string): {
   validTo: Date;
 } | null {
   try {
-    const cert = forge.pki.certificateFromPem(pem);
+    const firstCert = extractFirstCertificate(pem);
+    if (!firstCert) return null;
+    const cert = forge.pki.certificateFromPem(firstCert);
     return {
       subject: cert.subject.getField("CN")?.value || "Unknown",
       issuer: cert.issuer.getField("CN")?.value || "Unknown",
