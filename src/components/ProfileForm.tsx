@@ -38,10 +38,12 @@ export function ProfileForm() {
     setSelectedProvider(provider);
     if (provider.id !== "custom") {
       setProfileName(provider.name);
+      setProfileIdentifier(`com.${provider.id}.dns`);
       setServerUrl(dnsProtocol === "HTTPS" ? provider.dohUrl : provider.dotHostname);
       setServerIps(provider.ips?.join(", ") || "");
     } else {
       setProfileName("");
+      setProfileIdentifier("");
       setServerUrl("");
       setServerIps("");
     }
