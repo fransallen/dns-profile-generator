@@ -334,9 +334,9 @@ export function ProfileForm() {
         </div>
 
         {/* Signing Section */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Label className="text-base font-medium">Signing</Label>
+            <Label>Signing</Label>
           </div>
 
           <div>
