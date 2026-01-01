@@ -8,8 +8,10 @@ import { InfoTooltip } from "@/components/InfoTooltip";
 import { ProviderSelector } from "@/components/ProviderSelector";
 import { CodePreview } from "@/components/CodePreview";
 import { CertificateInput } from "@/components/CertificateInput";
+import { SigningCertificateInput, type SigningCertificates } from "@/components/SigningCertificateInput";
 import { dnsProviders, type DNSProvider } from "@/lib/dns-providers";
 import { generateMobileConfig, downloadProfile, type ProfileConfig, type CertificateConfig } from "@/lib/profile-generator";
+import { signMobileConfig, downloadSignedProfile } from "@/lib/profile-signer";
 import { toast } from "sonner";
 import { Sparkles, RefreshCw } from "lucide-react";
 
@@ -24,7 +26,10 @@ export function ProfileForm() {
   const [encryptedOnly, setEncryptedOnly] = useState(false);
   const [payloadScope, setPayloadScope] = useState<"System" | "User">("System");
   const [certificates, setCertificates] = useState<CertificateConfig[]>([]);
+  const [signingEnabled, setSigningEnabled] = useState(false);
+  const [signingCerts, setSigningCerts] = useState<SigningCertificates | null>(null);
   const [generatedXml, setGeneratedXml] = useState<string | null>(null);
+  const [signedProfile, setSignedProfile] = useState<Uint8Array | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -91,6 +96,11 @@ export function ProfileForm() {
       return;
     }
 
+    if (signingEnabled && !signingCerts) {
+      toast.error("Please provide signing certificates or disable signing");
+      return;
+    }
+
     const config: ProfileConfig = {
       profileName: profileName.trim(),
       organizationName: organizationName.trim(),
@@ -108,12 +118,31 @@ export function ProfileForm() {
 
     const xml = generateMobileConfig(config);
     setGeneratedXml(xml);
-    toast.success("Profile generated successfully");
+
+    // Sign the profile if signing is enabled
+    if (signingEnabled && signingCerts) {
+      try {
+        const signed = signMobileConfig(xml, signingCerts);
+        setSignedProfile(signed);
+        toast.success("Profile generated and signed successfully");
+      } catch (error) {
+        console.error("Signing error:", error);
+        toast.error(`Failed to sign profile: ${error instanceof Error ? error.message : "Unknown error"}`);
+        setSignedProfile(null);
+      }
+    } else {
+      setSignedProfile(null);
+      toast.success("Profile generated successfully");
+    }
   };
 
   const handleDownload = () => {
-    if (generatedXml) {
-      const filename = profileName.replace(/[^a-zA-Z0-9-_]/g, "_") || "dns-profile";
+    const filename = profileName.replace(/[^a-zA-Z0-9-_]/g, "_") || "dns-profile";
+    
+    if (signedProfile) {
+      downloadSignedProfile(signedProfile, filename);
+      toast.success("Signed profile downloaded");
+    } else if (generatedXml) {
       downloadProfile(generatedXml, filename);
       toast.success("Profile downloaded");
     }
@@ -130,7 +159,10 @@ export function ProfileForm() {
     setEncryptedOnly(false);
     setPayloadScope("System");
     setCertificates([]);
+    setSigningEnabled(false);
+    setSigningCerts(null);
     setGeneratedXml(null);
+    setSignedProfile(null);
     setErrors({});
   };
 
@@ -315,6 +347,14 @@ export function ProfileForm() {
 
         {/* Certificate Section */}
         <CertificateInput certificates={certificates} onChange={setCertificates} />
+
+        {/* Signing Section */}
+        <SigningCertificateInput
+          enabled={signingEnabled}
+          onEnabledChange={setSigningEnabled}
+          certificates={signingCerts}
+          onChange={setSigningCerts}
+        />
       </div>
 
       {/* Action Buttons */}
@@ -335,6 +375,7 @@ export function ProfileForm() {
           code={generatedXml}
           filename={`${profileName.replace(/[^a-zA-Z0-9-_]/g, "_") || "dns-profile"}.mobileconfig`}
           onDownload={handleDownload}
+          isSigned={!!signedProfile}
         />
       )}
     </div>
