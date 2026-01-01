@@ -1,3 +1,8 @@
+export interface CertificateConfig {
+  name: string;
+  data: string; // Base64-encoded certificate data (PEM content without headers)
+}
+
 export interface ProfileConfig {
   profileName: string;
   organizationName: string;
@@ -7,6 +12,7 @@ export interface ProfileConfig {
   serverIps: string[];
   encryptedOnly: boolean;
   payloadScope: "System" | "User";
+  certificates: CertificateConfig[];
 }
 
 function generateUUID(): string {
@@ -24,6 +30,14 @@ function escapeXml(str: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&apos;");
+}
+
+function extractBase64FromPem(pem: string): string {
+  // Remove PEM headers/footers and whitespace
+  return pem
+    .replace(/-----BEGIN CERTIFICATE-----/g, "")
+    .replace(/-----END CERTIFICATE-----/g, "")
+    .replace(/\s/g, "");
 }
 
 export function generateMobileConfig(config: ProfileConfig): string {
@@ -51,6 +65,31 @@ export function generateMobileConfig(config: ProfileConfig): string {
       <string>TLS</string>
       <key>ServerName</key>
       <string>${escapeXml(config.serverUrl)}</string>${serverAddressesXml}`;
+
+  // Generate certificate payloads
+  const certificatePayloads = config.certificates
+    .map((cert, index) => {
+      const certUUID = generateUUID();
+      const certData = extractBase64FromPem(cert.data);
+      return `
+      <dict>
+        <key>PayloadCertificateFileName</key>
+        <string>${escapeXml(cert.name)}.cer</string>
+        <key>PayloadContent</key>
+        <data>${certData}</data>
+        <key>PayloadDisplayName</key>
+        <string>${escapeXml(cert.name)}</string>
+        <key>PayloadIdentifier</key>
+        <string>${escapeXml(config.profileIdentifier)}.cert.${index}</string>
+        <key>PayloadType</key>
+        <string>com.apple.security.pem</string>
+        <key>PayloadUUID</key>
+        <string>${certUUID}</string>
+        <key>PayloadVersion</key>
+        <integer>1</integer>
+      </dict>`;
+    })
+    .join("");
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -81,7 +120,7 @@ export function generateMobileConfig(config: ProfileConfig): string {
         <integer>1</integer>
         <key>ProhibitDisablement</key>
         <${config.encryptedOnly}/>
-      </dict>
+      </dict>${certificatePayloads}
     </array>
     <key>PayloadDescription</key>
     <string>Configures encrypted DNS (${config.dnsProtocol === "HTTPS" ? "DNS over HTTPS" : "DNS over TLS"}) for secure DNS resolution.</string>
