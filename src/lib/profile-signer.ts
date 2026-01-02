@@ -37,21 +37,42 @@ export type PemValidationResult =
 
 /**
  * Validates a PEM certificate (supports fullchain - uses first cert)
- * Now supports both RSA and ECDSA certificates via pkijs
+ * Supports both RSA and ECDSA certificates via pkijs
  */
 export function validatePemCertificate(pem: string): PemValidationResult {
   try {
-    const firstCert = extractFirstCertificate(pem);
+    // Normalize line endings and trim
+    const normalized = pem.replace(/\r\n/g, "\n").trim();
+    
+    const firstCert = extractFirstCertificate(normalized);
     if (!firstCert) {
       return { valid: false, code: "NO_PEM_BLOCK", error: "No PEM certificate block found" };
     }
 
     const certBuffer = pemToArrayBuffer(firstCert);
+    
+    if (certBuffer.byteLength === 0) {
+      return { valid: false, code: "INVALID_PEM", error: "Certificate appears to be empty" };
+    }
+    
     // This will throw if the certificate is invalid
-    pkijs.Certificate.fromBER(certBuffer);
+    const cert = pkijs.Certificate.fromBER(certBuffer);
+    
+    // Verify we got a valid certificate object
+    if (!cert.subject || !cert.issuer) {
+      return { valid: false, code: "INVALID_PEM", error: "Certificate structure is invalid" };
+    }
+    
     return { valid: true };
   } catch (err) {
     console.warn("Certificate validation error:", err);
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+    
+    // Provide more specific error messages
+    if (errorMessage.includes("Object's schema was not verified")) {
+      return { valid: false, code: "INVALID_PEM", error: "Certificate format is invalid or corrupted" };
+    }
+    
     return { valid: false, code: "INVALID_PEM", error: "Invalid PEM certificate" };
   }
 }
@@ -60,7 +81,8 @@ export function validatePemCertificate(pem: string): PemValidationResult {
  * Validates a PEM private key (supports RSA and ECDSA; encrypted keys are not supported)
  */
 export function validatePemPrivateKey(pem: string): PemValidationResult {
-  const trimmed = pem.trim();
+  // Normalize line endings and trim
+  const trimmed = pem.replace(/\r\n/g, "\n").trim();
 
   // Common encrypted formats
   if (
@@ -88,10 +110,17 @@ export function validatePemPrivateKey(pem: string): PemValidationResult {
     // Try to decode the base64 content to verify it's valid
     const keyBuffer = pemToArrayBuffer(trimmed);
     if (keyBuffer.byteLength === 0) {
-      return { valid: false, code: "INVALID_PEM", error: "Invalid PEM private key" };
+      return { valid: false, code: "INVALID_PEM", error: "Private key appears to be empty" };
     }
+    
+    // Basic size check - a valid private key should have reasonable size
+    if (keyBuffer.byteLength < 32) {
+      return { valid: false, code: "INVALID_PEM", error: "Private key data is too short" };
+    }
+    
     return { valid: true };
-  } catch {
+  } catch (err) {
+    console.warn("Private key validation error:", err);
     return { valid: false, code: "INVALID_PEM", error: "Invalid PEM private key" };
   }
 }
@@ -107,7 +136,10 @@ export function getCertificateInfo(pem: string): {
   validTo: Date;
 } | null {
   try {
-    const firstCert = extractFirstCertificate(pem);
+    // Normalize line endings
+    const normalized = pem.replace(/\r\n/g, "\n").trim();
+    
+    const firstCert = extractFirstCertificate(normalized);
     if (!firstCert) return null;
     
     const certBuffer = pemToArrayBuffer(firstCert);
