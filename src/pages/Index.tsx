@@ -168,6 +168,31 @@ const Index = () => {
               </p>
             </div>
           </div>
+
+          {/* Learn More */}
+          <div className="mt-8 animate-fade-in rounded-xl border border-border bg-card p-6">
+            <h2 className="mb-4 text-xl font-semibold">Learn More</h2>
+            <div className="space-y-4 text-sm text-muted-foreground">
+              <p>
+                Apple's encrypted DNS support allows you to configure DNS over HTTPS (DoH) or DNS over TLS (DoT) 
+                system-wide on your devices. This ensures that your DNS queries are encrypted and protected from 
+                eavesdropping, providing enhanced privacy and security.
+              </p>
+              <p>
+                Configuration profiles (.mobileconfig files) are the official way to deploy encrypted DNS settings 
+                across Apple devices. Once installed, the DNS settings apply to all network connections, including 
+                Wi-Fi and cellular.
+              </p>
+              <a
+                href="https://developer.apple.com/documentation/devicemanagement/dnssettings"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-primary hover:underline"
+              >
+                Read the Apple DNS Settings Documentation →
+              </a>
+            </div>
+          </div>
         </div>
       </main>
 
@@ -178,13 +203,14 @@ const Index = () => {
             No data is collected or stored. All profile generation happens locally in your browser.
           </p>
           <p>
+            Made by{" "}
             <a
-              href="https://developer.apple.com/documentation/devicemanagement/dnssettings"
+              href="https://upset.dev"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline"
             >
-              Apple DNS Settings Documentation →
+              upset.dev
             </a>
           </p>
         </div>
