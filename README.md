@@ -1,73 +1,85 @@
-# Welcome to your Lovable project
+# Apple DNS Profile Generator
 
-## Project info
+A web-based tool to generate Apple configuration profiles for encrypted DNS (DNS over HTTPS and DNS over TLS). Enable system-wide encrypted DNS on your iPhone, iPad, Mac, and Apple TV.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Features
 
-## How can I edit this code?
+- 🔒 **Encrypted DNS** - Generate profiles for DoH (DNS over HTTPS) and DoT (DNS over TLS)
+- 🎯 **Popular Providers** - Pre-configured templates for Cloudflare, Google, Quad9, and AdGuard
+- ✏️ **Custom DNS** - Create profiles with your own DNS server configuration
+- 📝 **S/MIME Signing** - Optionally sign profiles with your own certificate
+- 🔐 **Privacy First** - All generation happens locally in your browser, no data sent to servers
+- 📱 **Multi-Platform** - Works on iOS, iPadOS, macOS, and tvOS
 
-There are several ways of editing your application.
+## How to Use
 
-**Use Lovable**
+1. **Select a DNS Provider** - Choose from popular providers or enter custom DNS settings
+2. **Choose Protocol** - Select DNS over HTTPS (DoH) or DNS over TLS (DoT)
+3. **Configure Options** - Set profile name, description, and optional Wi-Fi/cellular restrictions
+4. **Optional Signing** - Add your signing certificate and private key for S/MIME signing
+5. **Download** - Click "Download Profile" to get your `.mobileconfig` file
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## Installation
 
-Changes made via Lovable will be committed automatically to this repo.
+### iOS / iPadOS
+1. Download the configuration profile
+2. Open the Settings app
+3. Tap "Profile Downloaded"
+4. Tap Install and follow the onscreen instructions
 
-**Use your preferred IDE**
+### macOS
+1. Download the configuration profile
+2. Open the downloaded `.mobileconfig` file
+3. Open System Preferences → Profiles
+4. Click Install
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### tvOS
+1. Open Settings → General → Privacy
+2. Hover over "Share Apple TV Analytics" without pressing
+3. Press Play on the remote
+4. Select "Add Profile" and enter the profile URL
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Compatibility
 
-Follow these steps:
+- **iOS / iPadOS**: 14.0 and later
+- **macOS**: 11.0 (Big Sur) and later
+- **tvOS**: 14.0 and later
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
+## Development
 
 This project is built with:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vitejs.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [PKI.js](https://pkijs.org/) for S/MIME signing
 
-## How can I deploy this project?
+### Getting Started
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+```bash
+# Clone the repository
+git clone https://github.com/fransallen/apple-dns.git
 
-## Can I connect a custom domain to my Lovable project?
+# Navigate to the project directory
+cd apple-dns
 
-Yes, you can!
+# Install dependencies
+npm install
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+# Start the development server
+npm run dev
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## Resources
+
+- [Apple DNS Settings Documentation](https://developer.apple.com/documentation/devicemanagement/dnssettings)
+- [Encrypted DNS Overview](https://support.apple.com/guide/deployment/encrypted-dns-depf7c8d4e3c/web)

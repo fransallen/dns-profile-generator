@@ -1,5 +1,5 @@
 import { ProfileForm } from "@/components/ProfileForm";
-import { Shield, Smartphone, Monitor, Tv, Apple } from "lucide-react";
+import { Shield, Smartphone, Monitor, Tv, Apple, Github } from "lucide-react";
 
 const Index = () => {
   return (
@@ -14,12 +14,13 @@ const Index = () => {
             <span className="text-lg font-semibold">DNS Profile Generator</span>
           </div>
           <a
-            href="https://developer.apple.com/documentation/devicemanagement/dnssettings"
+            href="https://github.com/fransallen/apple-dns"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
-            Apple Docs →
+            <Github className="h-4 w-4" />
+            GitHub
           </a>
         </div>
       </header>
@@ -173,8 +174,18 @@ const Index = () => {
       {/* Footer */}
       <footer className="border-t border-border py-6">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>
+          <p className="mb-2">
             No data is collected or stored. All profile generation happens locally in your browser.
+          </p>
+          <p>
+            <a
+              href="https://developer.apple.com/documentation/devicemanagement/dnssettings"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              Apple DNS Settings Documentation →
+            </a>
           </p>
         </div>
       </footer>
