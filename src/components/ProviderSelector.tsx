@@ -7,11 +7,13 @@ interface ProviderSelectorProps {
   onSelect: (provider: DNSProvider) => void;
 }
 
+const basePath = "/dns-profile-generator/";
+
 const providerIcons: Record<string, string> = {
-  cloudflare: "/cloudflare-icon.svg",
-  google: "/google-icon.svg",
-  quad9: "/quad9-icon.svg",
-  adguard: "/adguard-icon.svg",
+  cloudflare: "cloudflare-icon.svg",
+  google: "google-icon.svg",
+  quad9: "quad9-icon.svg",
+  adguard: "adguard-icon.svg",
 };
 
 export function ProviderSelector({
@@ -44,7 +46,7 @@ export function ProviderSelector({
               <Settings className="h-5 w-5" />
             ) : (
               <img
-                src={providerIcons[provider.id]}
+                src={basePath + providerIcons[provider.id]}
                 alt={`${provider.name} icon`}
                 className="h-6 w-6"
               />
