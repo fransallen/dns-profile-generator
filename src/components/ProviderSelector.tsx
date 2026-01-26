@@ -8,10 +8,10 @@ interface ProviderSelectorProps {
 }
 
 const providerIcons: Record<string, string> = {
-  cloudflare: "/cloudflare-icon.svg",
-  google: "/google-icon.svg",
-  quad9: "/quad9-icon.svg",
-  adguard: "/adguard-icon.svg",
+  cloudflare: "./cloudflare-icon.svg",
+  google: "./google-icon.svg",
+  quad9: "./quad9-icon.svg",
+  adguard: "./adguard-icon.svg",
 };
 
 export function ProviderSelector({
