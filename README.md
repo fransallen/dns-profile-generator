@@ -22,18 +22,21 @@ A web-based tool to generate Apple configuration profiles for encrypted DNS (DNS
 ## Installation
 
 ### iOS / iPadOS
+
 1. Download the configuration profile
 2. Open the Settings app
 3. Tap "Profile Downloaded"
 4. Tap Install and follow the onscreen instructions
 
 ### macOS
+
 1. Download the configuration profile
 2. Open the downloaded `.mobileconfig` file
 3. Open System Preferences → Profiles
 4. Click Install
 
 ### tvOS
+
 1. Open Settings → General → Privacy
 2. Hover over "Share Apple TV Analytics" without pressing
 3. Press Play on the remote
@@ -59,10 +62,10 @@ This project is built with:
 
 ```bash
 # Clone the repository
-git clone https://github.com/fransallen/apple-dns.git
+git clone https://github.com/fransallen/dns-profile-generator.git
 
 # Navigate to the project directory
-cd apple-dns
+cd dns-profile-generator
 
 # Install dependencies
 npm install
