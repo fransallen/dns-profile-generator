@@ -8,7 +8,10 @@ import { InfoTooltip } from "@/components/InfoTooltip";
 import { ProviderSelector } from "@/components/ProviderSelector";
 import { CodePreview } from "@/components/CodePreview";
 
-import { SigningCertificateInput, type SigningCertificates } from "@/components/SigningCertificateInput";
+import {
+  SigningCertificateInput,
+  type SigningCertificates,
+} from "@/components/SigningCertificateInput";
 import { dnsProviders, type DNSProvider } from "@/lib/dns-providers";
 import {
   generateMobileConfig,
@@ -21,25 +24,36 @@ import { toast } from "sonner";
 import { Sparkles, RefreshCw } from "lucide-react";
 
 export function ProfileForm() {
-  const [selectedProvider, setSelectedProvider] = useState<DNSProvider>(dnsProviders[0]);
-  const [profileName, setProfileName] = useState("Encrypted DNS");
+  const [selectedProvider, setSelectedProvider] = useState<DNSProvider>(
+    dnsProviders[0],
+  );
+  const [profileName, setProfileName] = useState("Cloudflare");
   const [organizationName, setOrganizationName] = useState("");
-  const [profileIdentifier, setProfileIdentifier] = useState("com.example.dns");
+  const [profileIdentifier, setProfileIdentifier] =
+    useState("com.cloudflare-dns");
   const [dnsProtocol, setDnsProtocol] = useState<"HTTPS" | "TLS">("HTTPS");
   const [serverUrl, setServerUrl] = useState(dnsProviders[0].dohUrl);
-  const [serverIps, setServerIps] = useState(dnsProviders[0].ips?.join(", ") || "");
+  const [serverIps, setServerIps] = useState(
+    dnsProviders[0].ips?.join(", ") || "",
+  );
   const [encryptedOnly, setEncryptedOnly] = useState(false);
   const [payloadScope, setPayloadScope] = useState<"System" | "User">("System");
   const [certificates] = useState<CertificateConfig[]>([]);
   const [signingEnabled, setSigningEnabled] = useState(false);
-  const [signingCerts, setSigningCerts] = useState<SigningCertificates | null>(null);
+  const [signingCerts, setSigningCerts] = useState<SigningCertificates | null>(
+    null,
+  );
   const [generatedXml, setGeneratedXml] = useState<string | null>(null);
   const [signedProfile, setSignedProfile] = useState<Uint8Array | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (selectedProvider.id !== "custom") {
-      setServerUrl(dnsProtocol === "HTTPS" ? selectedProvider.dohUrl : selectedProvider.dotHostname);
+      setServerUrl(
+        dnsProtocol === "HTTPS"
+          ? selectedProvider.dohUrl
+          : selectedProvider.dotHostname,
+      );
       setServerIps(selectedProvider.ips?.join(", ") || "");
     }
   }, [selectedProvider, dnsProtocol]);
@@ -48,8 +62,10 @@ export function ProfileForm() {
     setSelectedProvider(provider);
     if (provider.id !== "custom") {
       setProfileName(provider.name);
-      setProfileIdentifier(`com.${provider.id}.dns`);
-      setServerUrl(dnsProtocol === "HTTPS" ? provider.dohUrl : provider.dotHostname);
+      setProfileIdentifier(provider.identifier);
+      setServerUrl(
+        dnsProtocol === "HTTPS" ? provider.dohUrl : provider.dotHostname,
+      );
       setServerIps(provider.ips?.join(", ") || "");
     } else {
       setProfileName("");
@@ -69,7 +85,8 @@ export function ProfileForm() {
     if (!profileIdentifier.trim()) {
       newErrors.profileIdentifier = "Profile identifier is required";
     } else if (!/^[a-zA-Z][a-zA-Z0-9.-]*$/.test(profileIdentifier)) {
-      newErrors.profileIdentifier = "Invalid identifier format (use reverse-DNS style)";
+      newErrors.profileIdentifier =
+        "Invalid identifier format (use reverse-DNS style)";
     }
 
     if (!serverUrl.trim()) {
@@ -132,7 +149,9 @@ export function ProfileForm() {
         toast.success("Profile generated and signed successfully");
       } catch (error) {
         console.error("Signing error:", error);
-        toast.error(`Failed to sign profile: ${error instanceof Error ? error.message : "Unknown error"}`);
+        toast.error(
+          `Failed to sign profile: ${error instanceof Error ? error.message : "Unknown error"}`,
+        );
         setSignedProfile(null);
       }
     } else {
@@ -142,7 +161,8 @@ export function ProfileForm() {
   };
 
   const handleDownload = () => {
-    const filename = profileName.replace(/[^a-zA-Z0-9-_]/g, "_") || "dns-profile";
+    const filename =
+      profileName.replace(/[^a-zA-Z0-9-_]/g, "_") || "dns-profile";
 
     if (signedProfile) {
       downloadSignedProfile(signedProfile, filename);
@@ -179,9 +199,14 @@ export function ProfileForm() {
           <Label className="text-base font-medium">DNS Provider</Label>
           <InfoTooltip content="Select a pre-configured DNS provider or choose Custom to enter your own server details." />
         </div>
-        <ProviderSelector selectedProvider={selectedProvider.id} onSelect={handleProviderSelect} />
+        <ProviderSelector
+          selectedProvider={selectedProvider.id}
+          onSelect={handleProviderSelect}
+        />
         {selectedProvider.description && selectedProvider.id !== "custom" && (
-          <p className="text-sm text-muted-foreground">{selectedProvider.description}</p>
+          <p className="text-sm text-muted-foreground">
+            {selectedProvider.description}
+          </p>
         )}
       </div>
 
@@ -199,7 +224,9 @@ export function ProfileForm() {
             placeholder="My Encrypted DNS"
             className={errors.profileName ? "border-destructive" : ""}
           />
-          {errors.profileName && <p className="text-xs text-destructive">{errors.profileName}</p>}
+          {errors.profileName && (
+            <p className="text-xs text-destructive">{errors.profileName}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -227,7 +254,11 @@ export function ProfileForm() {
             placeholder="com.example.dns"
             className={errors.profileIdentifier ? "border-destructive" : ""}
           />
-          {errors.profileIdentifier && <p className="text-xs text-destructive">{errors.profileIdentifier}</p>}
+          {errors.profileIdentifier && (
+            <p className="text-xs text-destructive">
+              {errors.profileIdentifier}
+            </p>
+          )}
         </div>
       </div>
 
@@ -259,7 +290,9 @@ export function ProfileForm() {
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Label htmlFor="serverUrl">{dnsProtocol === "HTTPS" ? "Server URL *" : "Server Hostname *"}</Label>
+            <Label htmlFor="serverUrl">
+              {dnsProtocol === "HTTPS" ? "Server URL *" : "Server Hostname *"}
+            </Label>
             <InfoTooltip
               content={
                 dnsProtocol === "HTTPS"
@@ -272,10 +305,16 @@ export function ProfileForm() {
             id="serverUrl"
             value={serverUrl}
             onChange={(e) => setServerUrl(e.target.value)}
-            placeholder={dnsProtocol === "HTTPS" ? "https://dns.example.com/dns-query" : "dns.example.com"}
+            placeholder={
+              dnsProtocol === "HTTPS"
+                ? "https://dns.example.com/dns-query"
+                : "dns.example.com"
+            }
             className={errors.serverUrl ? "border-destructive" : ""}
           />
-          {errors.serverUrl && <p className="text-xs text-destructive">{errors.serverUrl}</p>}
+          {errors.serverUrl && (
+            <p className="text-xs text-destructive">{errors.serverUrl}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -290,7 +329,9 @@ export function ProfileForm() {
             placeholder="1.1.1.1, 1.0.0.1"
             className={errors.serverIps ? "border-destructive" : ""}
           />
-          {errors.serverIps && <p className="text-xs text-destructive">{errors.serverIps}</p>}
+          {errors.serverIps && (
+            <p className="text-xs text-destructive">{errors.serverIps}</p>
+          )}
         </div>
       </div>
 
@@ -307,7 +348,10 @@ export function ProfileForm() {
             onCheckedChange={(checked) => setEncryptedOnly(checked === true)}
           />
           <div className="flex items-center gap-2">
-            <Label htmlFor="encryptedOnly" className="cursor-pointer font-normal">
+            <Label
+              htmlFor="encryptedOnly"
+              className="cursor-pointer font-normal"
+            >
               Prohibit disabling encrypted DNS
             </Label>
             <InfoTooltip content="When enabled, users cannot disable the encrypted DNS settings. Use with caution on managed devices." />
@@ -321,14 +365,24 @@ export function ProfileForm() {
           </div>
           <RadioGroup
             value={payloadScope}
-            onValueChange={(value) => setPayloadScope(value as "System" | "User")}
+            onValueChange={(value) =>
+              setPayloadScope(value as "System" | "User")
+            }
             className="flex gap-4"
           >
             <div className="flex items-center gap-2">
-              <RadioGroupCard value="System" label="System" className="w-auto px-6" />
+              <RadioGroupCard
+                value="System"
+                label="System"
+                className="w-auto px-6"
+              />
             </div>
             <div className="flex items-center gap-2">
-              <RadioGroupCard value="User" label="User" className="w-auto px-6" />
+              <RadioGroupCard
+                value="User"
+                label="User"
+                className="w-auto px-6"
+              />
             </div>
           </RadioGroup>
         </div>
@@ -354,7 +408,12 @@ export function ProfileForm() {
           <Sparkles className="h-4 w-4" />
           Generate Profile
         </Button>
-        <Button onClick={handleReset} variant="outline" size="lg" className="gap-2">
+        <Button
+          onClick={handleReset}
+          variant="outline"
+          size="lg"
+          className="gap-2"
+        >
           <RefreshCw className="h-4 w-4" />
           Reset
         </Button>
