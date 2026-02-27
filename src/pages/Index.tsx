@@ -6,6 +6,19 @@ import { Link } from "react-router-dom";
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
+      {/* Top Bar */}
+      <div className="bg-background">
+        <div className="bg-foreground/10 text-center py-2 px-4">
+          <a
+            href="https://speedflare.io/?ref=dns-profile-generator"
+            className="font-medium hover:underline"
+          >
+            ⚡ <strong>Speedflare</strong> — Check your website performance
+            worldwide!
+          </a>
+        </div>
+      </div>
+
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
@@ -15,8 +28,10 @@ const Index = () => {
             </div>
             <span className="text-lg font-semibold">DNS Profile Generator</span>
           </Link>
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
+          <div className="flex items-center gap-4">
+            <div className="mb-1">
+              <ThemeToggle />
+            </div>
             <a
               href="https://github.com/fransallen/dns-profile-generator"
               target="_blank"
