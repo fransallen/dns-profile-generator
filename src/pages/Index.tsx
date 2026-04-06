@@ -10,11 +10,11 @@ const Index = () => {
       <div className="bg-background">
         <div className="bg-foreground/10 text-center py-2 px-4">
           <a
-            href="https://speedflare.io/?ref=dns-profile-generator"
+            href="https://upset.dev/fonts"
             className="font-medium hover:underline"
           >
-            ⚡ <strong>Speedflare</strong> — Check your website performance
-            worldwide!
+            ⚡ <strong>fonts.upset.dev</strong> — A privacy-friendly Google
+            Fonts alternative.
           </a>
         </div>
       </div>
