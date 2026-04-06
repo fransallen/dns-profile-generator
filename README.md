@@ -4,12 +4,12 @@ A web-based tool to generate Apple configuration profiles for encrypted DNS (DNS
 
 ## Features
 
-- 🔒 **Encrypted DNS** - Generate profiles for DoH (DNS over HTTPS) and DoT (DNS over TLS)
-- 🎯 **Popular Providers** - Pre-configured templates for Cloudflare, Google, Quad9, and AdGuard
-- ✏️ **Custom DNS** - Create profiles with your own DNS server configuration
-- 📝 **S/MIME Signing** - Optionally sign profiles with your own certificate
-- 🔐 **Privacy First** - All generation happens locally in your browser, no data sent to servers
-- 📱 **Multi-Platform** - Works on iOS, iPadOS, macOS, and tvOS
+- **Encrypted DNS** - Generate profiles for DoH (DNS over HTTPS) and DoT (DNS over TLS)
+- **Popular Providers** - Pre-configured templates for Cloudflare, Google, Quad9, and AdGuard
+- **Custom DNS** - Create profiles with your own DNS server configuration
+- **S/MIME Signing** - Optionally sign profiles with your own certificate
+- **Privacy First** - All generation happens locally in your browser, no data sent to servers
+- **Multi-Platform** - Works on iOS, iPadOS, macOS, and tvOS
 
 ## How to Use
 
