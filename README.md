@@ -74,6 +74,8 @@ bun install
 bun run dev
 ```
 
+The server listens on `http://localhost:8080/dns-profile-generator/`.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
