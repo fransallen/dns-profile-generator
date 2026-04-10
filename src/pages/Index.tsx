@@ -10,11 +10,11 @@ const Index = () => {
       <div className="bg-background">
         <div className="bg-foreground/10 text-center py-2 px-4">
           <a
-            href="https://upset.dev/fonts"
-            className="font-medium hover:underline"
+            href="https://upset.dev/onion-domain"
+            className="text-sm font-medium hover:underline"
           >
-            ⚡ <strong>fonts.upset.dev</strong> — A privacy-friendly Google
-            Fonts alternative.
+            🚀 Get a custom <strong>.onion address</strong> for your Tor hidden
+            service
           </a>
         </div>
       </div>
