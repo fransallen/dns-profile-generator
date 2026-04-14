@@ -13,8 +13,7 @@ const Index = () => {
             href="https://upset.dev/onion-domain"
             className="text-sm font-medium hover:underline"
           >
-            🚀 Get a custom <strong>.onion address</strong> for your Tor hidden
-            service
+            📣 Get a custom <strong>.onion address</strong> for your Tor site
           </a>
         </div>
       </div>
@@ -22,11 +21,9 @@ const Index = () => {
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-              <Shield className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="text-lg font-semibold">DNS Profile Generator</span>
+          <Link to="https://upset.dev" className="flex items-center gap-2">
+            <div className="rounded-full w-3 h-3 bg-foreground"></div>
+            <span className="text-lg font-semibold">upset.dev</span>
           </Link>
           <div className="flex items-center gap-4">
             <div className="mb-1">
